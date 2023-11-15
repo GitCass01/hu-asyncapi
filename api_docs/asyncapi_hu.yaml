@@ -1,0 +1,427 @@
+asyncapi: 3.0.0
+info:
+  title: Humor Unleashed Websocket API
+  version: '1.0.0'
+  description: |
+    Documentation for Humor Unleashed Websocket API.
+
+servers:
+  development:
+    host: 'localhost:4200'
+    protocol: http
+    description: Local Angular 17 server
+  production:
+    host: '...'
+    protocol: ...
+    description: Public server
+
+defaultContentType: application/json
+
+channels:
+  /create:
+    address: /create
+    messages:
+      publish.message:
+        payload:
+          type: object
+          properties:
+            userId:
+              type: string
+              format: uuid
+            deckId:
+              type: integer
+
+  '/join/{matchUrl}':
+    address: '/join/{matchUrl}'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      publish.message:
+        payload:
+          type: string
+
+  '/chat/{matchUrl}':
+    address: '/chat/{matchUrl}'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      publish.message:
+        payload:
+          type: object
+          properties:
+            username:
+              type: string
+            message:
+              type: string
+            timestamp:
+              type: string
+              format: date-time
+
+  '/{matchUrl}/start':
+    address: '/{matchUrl}/start'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      publish.message:
+        payload:
+          type: object
+          properties:
+            user_shifts:
+              type: object
+
+  '/{matchUrl}/draw':
+    address: '/{matchUrl}/draw'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      publish.message:
+        payload:
+          type: object
+          properties:
+            username:
+              type: string
+            answers:
+              type: array
+              items:
+                $ref: '#/components/schemas/AnswerCardDTO'
+            questions:
+              type: array
+              items:
+                $ref: '#/components/schemas/QuestionCardDTO'
+
+  '/{matchUrl}/chooseQuestion':
+    address: '/{matchUrl}/chooseQuestion'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      publish.message:
+        payload:
+          $ref: '#/components/schemas/QuestionCardDTO'
+
+  '/{matchUrl}/{username}/chooseAnswers':
+    address: '/{matchUrl}/{username}/chooseAnswers'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+      username:
+        description: The Username of the player
+    messages:
+      publish.message:
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnswerCardDTO'
+
+  '/{matchUrl}/chooseShiftAnswer':
+    address: '/{matchUrl}/chooseShiftAnswer'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      publish.message:
+        payload:
+          type: string
+
+  '/topic/{matchUrl}/endGame':
+    address: '/topic/{matchUrl}/endGame'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      publish.message:
+        payload:
+          type: string
+
+  /topic/matchUrl:
+    address: /topic/matchUrl
+    messages:
+      subscribe.message:
+        payload:
+          type: string
+
+  '/topic/chat/{matchUrl}':
+    address: '/topic/chat/{matchUrl}'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      subscribe.message:
+        payload:
+          $ref: '#/components/schemas/MessageDTO'
+
+  '/topic/{matchUrl}/shifts':
+    address: '/topic/{matchUrl}/shifts'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      subscribe.message:
+        payload:
+          type: object
+          properties:
+            user_shifts:
+              type: object
+
+  '/topic/user/{username}/{matchUrl}/answers':
+    address: '/topic/user/{username}/{matchUrl}/answers'
+    parameters:
+      username:
+        description: The username of the player
+    messages:
+      subscribe.message:
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnswerCardDTO'
+
+  '/topic/user/{username}/{matchUrl}/questions':
+    address: '/topic/user/{username}/{matchUrl}/questions'
+    parameters:
+      username:
+        description: The username of the player
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      subscribe.message:
+        payload:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuestionCardDTO'
+
+  '/topic/user/{username}/{matchUrl}/chosenAnswers':
+    address: '/topic/user/{username}/{matchUrl}/chosenAnswers'
+    parameters:
+      username:
+        description: The username of the player
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      subscribe.message:
+        payload:
+          type: object
+
+  '/topic/{matchUrl}/table/question':
+    address: '/topic/{matchUrl}/table/question'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      subscribe.message:
+        payload:
+          $ref: '#/components/schemas/QuestionCardDTO'
+
+  '/topic/{matchUrl}/table/winner':
+    address: '/topic/{matchUrl}/table/winner'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      subscribe.message:
+        payload:
+          type: string
+
+  '/topic/{matchUrl}/table/chosenAnswers':
+    address: '/topic/{matchUrl}/table/chosenAnswers'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      subscribe.message:
+        payload:
+          type: object
+
+  '/topic/{matchUrl}/scores':
+    address: '/topic/{matchUrl}/scores'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      subscribe.message:
+        payload:
+          type: object
+
+operations:
+  /create.publish:
+    action: receive
+    channel:
+      $ref: '#/channels/~1create'
+    messages:
+      - $ref: '#/channels/~1create/messages/publish.message'
+
+  '/join/{matchUrl}.publish':
+    action: receive
+    channel:
+      $ref: '#/channels/~1join~1{matchUrl}'
+    messages:
+      - $ref: '#/channels/~1join~1{matchUrl}/messages/publish.message'
+
+  '/chat/{matchUrl}.publish':
+    action: receive
+    channel:
+      $ref: '#/channels/~1chat~1{matchUrl}'
+    messages:
+      - $ref: '#/channels/~1chat~1{matchUrl}/messages/publish.message'
+
+  '/{matchUrl}/start.publish':
+    action: receive
+    channel:
+      $ref: '#/channels/~1{matchUrl}~1start'
+    messages:
+      - $ref: '#/channels/~1{matchUrl}~1start/messages/publish.message'
+
+  '/{matchUrl}/draw.publish':
+    action: receive
+    channel:
+      $ref: '#/channels/~1{matchUrl}~1draw'
+    messages:
+      - $ref: '#/channels/~1{matchUrl}~1draw/messages/publish.message'
+
+  '/{matchUrl}/chooseQuestion.publish':
+    action: receive
+    channel:
+      $ref: '#/channels/~1{matchUrl}~1chooseQuestion'
+    messages:
+      - $ref: '#/channels/~1{matchUrl}~1chooseQuestion/messages/publish.message'
+
+  '/{matchUrl}/{username}/chooseAnswers.publish':
+    action: receive
+    channel:
+      $ref: '#/channels/~1{matchUrl}~1{username}~1chooseAnswers'
+    messages:
+      - $ref: >-
+          #/channels/~1{matchUrl}~1{username}~1chooseAnswers/messages/publish.message
+
+  '/{matchUrl}/chooseShiftAnswer.publish':
+    action: receive
+    channel:
+      $ref: '#/channels/~1{matchUrl}~1chooseShiftAnswer'
+    messages:
+      - $ref: '#/channels/~1{matchUrl}~1chooseShiftAnswer/messages/publish.message'
+
+  '/topic/{matchUrl}/endGame.publish':
+    action: receive
+    channel:
+      $ref: '#/channels/~1topic~1{matchUrl}~1endGame'
+    messages:
+      - $ref: '#/channels/~1topic~1{matchUrl}~1endGame/messages/publish.message'
+
+  /topic/matchUrl.subscribe:
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1matchUrl'
+    messages:
+      - $ref: '#/channels/~1topic~1matchUrl/messages/subscribe.message'
+
+  '/topic/chat/{matchUrl}.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1chat~1{matchUrl}'
+    messages:
+      - $ref: '#/channels/~1topic~1chat~1{matchUrl}/messages/subscribe.message'
+
+  '/topic/{matchUrl}/shifts.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1{matchUrl}~1shifts'
+    messages:
+      - $ref: '#/channels/~1topic~1{matchUrl}~1shifts/messages/subscribe.message'
+
+  '/topic/user/{username}/{matchUrl}/answers.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1user~1{username}~1{matchUrl}~1answers'
+    messages:
+      - $ref: >-
+          #/channels/~1topic~1user~1{username}~1{matchUrl}~1answers/messages/subscribe.message
+
+  '/topic/user/{username}/{matchUrl}/questions.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1user~1{username}~1{matchUrl}~1questions'
+    messages:
+      - $ref: >-
+          #/channels/~1topic~1user~1{username}~1{matchUrl}~1questions/messages/subscribe.message
+
+  '/topic/user/{username}/{matchUrl}/chosenAnswers.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1user~1{username}~1{matchUrl}~1chosenAnswers'
+    messages:
+      - $ref: >-
+          #/channels/~1topic~1user~1{username}~1{matchUrl}~1chosenAnswers/messages/subscribe.message
+
+  '/topic/{matchUrl}/table/question.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1{matchUrl}~1table~1question'
+    messages:
+      - $ref: >-
+          #/channels/~1topic~1{matchUrl}~1table~1question/messages/subscribe.message
+
+  '/topic/{matchUrl}/table/winner.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1{matchUrl}~1table~1winner'
+    messages:
+      - $ref: >-
+          #/channels/~1topic~1{matchUrl}~1table~1winner/messages/subscribe.message
+
+  '/topic/{matchUrl}/table/chosenAnswers.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1{matchUrl}~1table~1chosenAnswers'
+    messages:
+      - $ref: >-
+          #/channels/~1topic~1{matchUrl}~1table~1chosenAnswers/messages/subscribe.message
+
+  '/topic/{matchUrl}/scores.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1{matchUrl}~1scores'
+    messages:
+      - $ref: '#/channels/~1topic~1{matchUrl}~1scores/messages/subscribe.message'
+
+components:
+  schemas:
+    MessageDTO:
+      type: object
+      properties:
+        username:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        message:
+          type: string
+
+    CardDTO:
+      type: object
+      properties:
+        cardId:
+          type: integer
+        text:
+          type: string
+        cardType:
+          $ref: '#/components/schemas/CardType'
+
+    QuestionCardDTO:
+      allOf:
+        - $ref: '#/components/schemas/CardDTO'
+        - type: object
+          properties:
+            blankFields:
+              type: integer
+
+    AnswerCardDTO:
+      $ref: '#/components/schemas/CardDTO'
+      
+    CardType:
+      type: string
+      enum:
+        - ANSWER
+        - QUESTION
