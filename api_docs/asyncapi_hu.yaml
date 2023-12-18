@@ -103,8 +103,8 @@ channels:
         payload:
           $ref: '#/components/schemas/QuestionCardDTO'
 
-  '/{matchUrl}/{username}/chooseAnswers':
-    address: '/{matchUrl}/{username}/chooseAnswers'
+  '/{matchUrl}/chooseAnswers':
+    address: '/{matchUrl}/chooseAnswers'
     parameters:
       matchUrl:
         description: The Match Url of the game
@@ -245,6 +245,36 @@ channels:
         payload:
           type: object
 
+  '/topic/players/{matchUrl}':
+    address: '/topic/players/{matchUrl}'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      subscribe.message:
+        payload:
+          type: object
+
+  '/topic/user/{username}/errors':
+    address: '/topic/user/{username}/errors'
+    parameters:
+      username:
+        description: The username of the player getting the error
+    messages:
+      subscribe.message:
+        payload:
+          type: string
+
+  '/topic/closed/{matchUrl}':
+    address: '/topic/closed/{matchUrl}'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game closing prematurely (eg. too few players)
+    messages:
+      subscribe.message:
+        payload:
+          type: string
+
 operations:
   /create.publish:
     action: receive
@@ -288,13 +318,13 @@ operations:
     messages:
       - $ref: '#/channels/~1{matchUrl}~1chooseQuestion/messages/publish.message'
 
-  '/{matchUrl}/{username}/chooseAnswers.publish':
+  '/{matchUrl}/chooseAnswers.publish':
     action: receive
     channel:
-      $ref: '#/channels/~1{matchUrl}~1{username}~1chooseAnswers'
+      $ref: '#/channels/~1{matchUrl}~1chooseAnswers'
     messages:
       - $ref: >-
-          #/channels/~1{matchUrl}~1{username}~1chooseAnswers/messages/publish.message
+          #/channels/~1{matchUrl}~1chooseAnswers/messages/publish.message
 
   '/{matchUrl}/chooseShiftAnswer.publish':
     action: receive
@@ -385,6 +415,27 @@ operations:
       $ref: '#/channels/~1topic~1{matchUrl}~1scores'
     messages:
       - $ref: '#/channels/~1topic~1{matchUrl}~1scores/messages/subscribe.message'
+
+  '/topic/players/{matchUrl}.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1players~1{matchUrl}'
+    messages:
+      - $ref: '#/channels/~1topic~1players~1{matchUrl}/messages/subscribe.message'
+
+  '/topic/user/{username}/errors.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1user~1{username}~1errors'
+    messages:
+      - $ref: '#/channels/~1topic~1user~1{username}~1errors/messages/subscribe.message'
+
+  '/topic/closed/{matchUrl}.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1closed~1{matchUrl}'
+    messages:
+      - $ref: '#/channels/~1topic~1closed~1{matchUrl}/messages/subscribe.message'
 
 components:
   schemas:
