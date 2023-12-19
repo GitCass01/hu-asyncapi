@@ -154,6 +154,16 @@ channels:
         payload:
           $ref: '#/components/schemas/MessageDTO'
 
+  '/topic/started/{matchUrl}':
+    address: '/topic/started/{matchUrl}'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      subscribe.message:
+        payload:
+          type: string
+
   '/topic/{matchUrl}/shifts':
     address: '/topic/{matchUrl}/shifts'
     parameters:
@@ -363,6 +373,13 @@ operations:
       $ref: '#/channels/~1topic~1chat~1{matchUrl}'
     messages:
       - $ref: '#/channels/~1topic~1chat~1{matchUrl}/messages/subscribe.message'
+
+  '/topic/started/{matchUrl}.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1started~1{matchUrl}'
+    messages:
+      - $ref: '#/channels/~1topic~1started~1{matchUrl}/messages/subscribe.message'
 
   '/topic/{matchUrl}/shifts.subscribe':
     action: send
