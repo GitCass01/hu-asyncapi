@@ -23,13 +23,7 @@ channels:
     messages:
       publish.message:
         payload:
-          type: object
-          properties:
-            userId:
-              type: string
-              format: uuid
-            deckId:
-              type: integer
+          $ref: '#/components/schemas/CreateMatchRequestDTO'
 
   '/join/{matchUrl}':
     address: '/join/{matchUrl}'
@@ -39,7 +33,7 @@ channels:
     messages:
       publish.message:
         payload:
-          description: "userId"
+          description: userId
           type: string
 
   '/chat/{matchUrl}':
@@ -60,10 +54,7 @@ channels:
     messages:
       publish.message:
         payload:
-          type: object
-          properties:
-            user_shifts:
-              type: object
+          type: 'null'
 
   '/{matchUrl}/draw':
     address: '/{matchUrl}/draw'
@@ -96,6 +87,7 @@ channels:
     messages:
       publish.message:
         payload:
+          description: List<AnswerCardDTO\>
           type: array
           items:
             $ref: '#/components/schemas/AnswerCardDTO'
@@ -168,7 +160,10 @@ channels:
     messages:
       subscribe.message:
         payload:
-          $ref: '#/components/schemas/Shifts'
+          description: Representation for a Map<String, Integer>
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ShiftMapItem'
 
   '/topic/user/{username}/{matchUrl}/answers':
     address: '/topic/user/{username}/{matchUrl}/answers'
@@ -249,7 +244,11 @@ channels:
     messages:
       subscribe.message:
         payload:
-          $ref: '#/components/schemas/Scores'
+          description: Representation for a Map<String, Integer>
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ScoreMapItem'
+
 
   '/topic/players/{matchUrl}':
     address: '/topic/players/{matchUrl}'
@@ -272,6 +271,7 @@ channels:
     messages:
       subscribe.message:
         payload:
+          description: A string about the error
           type: string
 
   '/topic/{matchUrl}/closed':
@@ -481,7 +481,21 @@ operations:
 
 components:
   schemas:
+    CreateMatchRequestDTO:
+      description: Representation of a CreateMatchRequestDTO
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        deckId:
+          type: integer
+          format: int64
+        language:
+          type: string
+
     UserDTO:
+      description: Representation of a UserDTO
       type: object
       properties:
         userId:
@@ -500,12 +514,14 @@ components:
           type: string
   
     UserRole:
+      description: Possible Roles for the users
       type: string
       enum:
         - ANONYMOUS
         - REGISTERED
 
     MessageDTO:
+      description: Representation of a MessageDTO object
       type: object
       properties:
         username:
@@ -545,8 +561,17 @@ components:
         - ANSWER
         - QUESTION
 
-    Scores:
-      description: Representation for a Map<String, Integer>
+    ShiftMapItem:
+      description: Representation of an item for a Map<String, Integer>
+      type: object
+      properties:
+        username:
+            type: string
+        shift_number:
+            type: integer
+
+    ScoreMapItem:
+      description: Representation of an item for a Map<String, Integer>
       type: object
       properties:
         username:
@@ -564,12 +589,3 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AnswerCardDTO'
-
-    Shifts:
-      description: Representation for a Map<String, Integer>
-      type: object
-      properties:
-        username:
-            type: string
-        shift_number:
-            type: integer

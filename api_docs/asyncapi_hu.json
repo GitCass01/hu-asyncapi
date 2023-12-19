@@ -24,16 +24,7 @@
       "messages": {
         "publish.message": {
           "payload": {
-            "type": "object",
-            "properties": {
-              "userId": {
-                "type": "string",
-                "format": "uuid"
-              },
-              "deckId": {
-                "type": "integer"
-              }
-            }
+            "$ref": "#/components/schemas/CreateMatchRequestDTO"
           }
         }
       }
@@ -79,12 +70,7 @@
       "messages": {
         "publish.message": {
           "payload": {
-            "type": "object",
-            "properties": {
-              "user_shifts": {
-                "type": "object"
-              }
-            }
+            "type": "null"
           }
         }
       }
@@ -133,6 +119,7 @@
       "messages": {
         "publish.message": {
           "payload": {
+            "description": "List<AnswerCardDTO\\>",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/AnswerCardDTO"
@@ -239,7 +226,11 @@
       "messages": {
         "subscribe.message": {
           "payload": {
-            "$ref": "#/components/schemas/Shifts"
+            "description": "Representation for a Map<String, Integer>",
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ShiftMapItem"
+            }
           }
         }
       }
@@ -359,7 +350,11 @@
       "messages": {
         "subscribe.message": {
           "payload": {
-            "$ref": "#/components/schemas/Scores"
+            "description": "Representation for a Map<String, Integer>",
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ScoreMapItem"
+            }
           }
         }
       }
@@ -393,6 +388,7 @@
       "messages": {
         "subscribe.message": {
           "payload": {
+            "description": "A string about the error",
             "type": "string"
           }
         }
@@ -710,7 +706,25 @@
   },
   "components": {
     "schemas": {
+      "CreateMatchRequestDTO": {
+        "description": "Representation of a CreateMatchRequestDTO",
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "deckId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "language": {
+            "type": "string"
+          }
+        }
+      },
       "UserDTO": {
+        "description": "Representation of a UserDTO",
         "type": "object",
         "properties": {
           "userId": {
@@ -736,6 +750,7 @@
         }
       },
       "UserRole": {
+        "description": "Possible Roles for the users",
         "type": "string",
         "enum": [
           "ANONYMOUS",
@@ -743,6 +758,7 @@
         ]
       },
       "MessageDTO": {
+        "description": "Representation of a MessageDTO object",
         "type": "object",
         "properties": {
           "username": {
@@ -798,8 +814,20 @@
           "QUESTION"
         ]
       },
-      "Scores": {
-        "description": "Representation for a Map<String, Integer>",
+      "ShiftMapItem": {
+        "description": "Representation of an item for a Map<String, Integer>",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "shift_number": {
+            "type": "integer"
+          }
+        }
+      },
+      "ScoreMapItem": {
+        "description": "Representation of an item for a Map<String, Integer>",
         "type": "object",
         "properties": {
           "username": {
@@ -822,18 +850,6 @@
             "items": {
               "$ref": "#/components/schemas/AnswerCardDTO"
             }
-          }
-        }
-      },
-      "Shifts": {
-        "description": "Representation for a Map<String, Integer>",
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string"
-          },
-          "shift_number": {
-            "type": "integer"
           }
         }
       }
