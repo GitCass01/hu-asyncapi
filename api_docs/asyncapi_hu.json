@@ -48,6 +48,7 @@
       "messages": {
         "publish.message": {
           "payload": {
+            "description": "userId",
             "type": "string"
           }
         }
@@ -63,19 +64,7 @@
       "messages": {
         "publish.message": {
           "payload": {
-            "type": "object",
-            "properties": {
-              "username": {
-                "type": "string"
-              },
-              "message": {
-                "type": "string"
-              },
-              "timestamp": {
-                "type": "string",
-                "format": "date-time"
-              }
-            }
+            "$ref": "#/components/schemas/MessageDTO"
           }
         }
       }
@@ -110,24 +99,8 @@
       "messages": {
         "publish.message": {
           "payload": {
-            "type": "object",
-            "properties": {
-              "username": {
-                "type": "string"
-              },
-              "answers": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/AnswerCardDTO"
-                }
-              },
-              "questions": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/QuestionCardDTO"
-                }
-              }
-            }
+            "description": "username",
+            "type": "string"
           }
         }
       }
@@ -178,7 +151,7 @@
       "messages": {
         "publish.message": {
           "payload": {
-            "type": "string"
+            "type": "null"
           }
         }
       }
@@ -193,6 +166,7 @@
       "messages": {
         "publish.message": {
           "payload": {
+            "description": "username of the winner",
             "type": "string"
           }
         }
@@ -203,6 +177,7 @@
       "messages": {
         "subscribe.message": {
           "payload": {
+            "description": "matchUrl of the created game",
             "type": "string"
           }
         }
@@ -233,7 +208,8 @@
       "messages": {
         "subscribe.message": {
           "payload": {
-            "type": "string"
+            "description": "true if the game has started",
+            "type": "boolean"
           }
         }
       }
@@ -263,12 +239,7 @@
       "messages": {
         "subscribe.message": {
           "payload": {
-            "type": "object",
-            "properties": {
-              "user_shifts": {
-                "type": "object"
-              }
-            }
+            "$ref": "#/components/schemas/Shifts"
           }
         }
       }
@@ -283,6 +254,7 @@
       "messages": {
         "subscribe.message": {
           "payload": {
+            "description": "List<AnswerCardDTO\\>",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/AnswerCardDTO"
@@ -304,6 +276,7 @@
       "messages": {
         "subscribe.message": {
           "payload": {
+            "description": "List<QuestionCardDTO\\>",
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/QuestionCardDTO"
@@ -325,7 +298,7 @@
       "messages": {
         "subscribe.message": {
           "payload": {
-            "type": "object"
+            "$ref": "#/components/schemas/ChosenAnswers"
           }
         }
       }
@@ -355,6 +328,7 @@
       "messages": {
         "subscribe.message": {
           "payload": {
+            "description": "The username of the winner",
             "type": "string"
           }
         }
@@ -370,7 +344,7 @@
       "messages": {
         "subscribe.message": {
           "payload": {
-            "type": "object"
+            "$ref": "#/components/schemas/ChosenAnswers"
           }
         }
       }
@@ -385,7 +359,7 @@
       "messages": {
         "subscribe.message": {
           "payload": {
-            "type": "object"
+            "$ref": "#/components/schemas/Scores"
           }
         }
       }
@@ -400,7 +374,11 @@
       "messages": {
         "subscribe.message": {
           "payload": {
-            "type": "object"
+            "description": "List<UserDTO\\> for a game",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserDTO"
+            }
           }
         }
       }
@@ -430,6 +408,7 @@
       "messages": {
         "subscribe.message": {
           "payload": {
+            "description": "A string about why the game closed prematurely",
             "type": "string"
           }
         }
@@ -445,6 +424,7 @@
       "messages": {
         "subscribe.message": {
           "payload": {
+            "description": "A string about the status of the timer (eg. 'expired', 'started', ...)",
             "type": "string"
           }
         }
@@ -755,6 +735,13 @@
           }
         }
       },
+      "UserRole": {
+        "type": "string",
+        "enum": [
+          "ANONYMOUS",
+          "REGISTERED"
+        ]
+      },
       "MessageDTO": {
         "type": "object",
         "properties": {
@@ -771,6 +758,7 @@
         }
       },
       "CardDTO": {
+        "description": "Representation of a generic Card or an AnswerCardDTO",
         "type": "object",
         "properties": {
           "cardId": {
@@ -785,6 +773,7 @@
         }
       },
       "QuestionCardDTO": {
+        "description": "Representation of a QuestionCardDTO",
         "allOf": [
           {
             "$ref": "#/components/schemas/CardDTO"
@@ -809,12 +798,44 @@
           "QUESTION"
         ]
       },
-      "UserRole": {
-        "type": "string",
-        "enum": [
-          "ANONYMOUS",
-          "REGISTERED"
-        ]
+      "Scores": {
+        "description": "Representation for a Map<String, Integer>",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "score": {
+            "type": "integer"
+          }
+        }
+      },
+      "ChosenAnswers": {
+        "description": "Representation of Map<String, List<AnswerCardDTO\\>>",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AnswerCardDTO"
+            }
+          }
+        }
+      },
+      "Shifts": {
+        "description": "Representation for a Map<String, Integer>",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "shift_number": {
+            "type": "integer"
+          }
+        }
       }
     }
   }

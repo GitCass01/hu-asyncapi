@@ -39,6 +39,7 @@ channels:
     messages:
       publish.message:
         payload:
+          description: "userId"
           type: string
 
   '/chat/{matchUrl}':
@@ -49,15 +50,7 @@ channels:
     messages:
       publish.message:
         payload:
-          type: object
-          properties:
-            username:
-              type: string
-            message:
-              type: string
-            timestamp:
-              type: string
-              format: date-time
+          $ref: '#/components/schemas/MessageDTO'
 
   '/{matchUrl}/start':
     address: '/{matchUrl}/start'
@@ -80,18 +73,8 @@ channels:
     messages:
       publish.message:
         payload:
-          type: object
-          properties:
-            username:
-              type: string
-            answers:
-              type: array
-              items:
-                $ref: '#/components/schemas/AnswerCardDTO'
-            questions:
-              type: array
-              items:
-                $ref: '#/components/schemas/QuestionCardDTO'
+          description: "username"
+          type: string
 
   '/{matchUrl}/chooseQuestion':
     address: '/{matchUrl}/chooseQuestion'
@@ -125,7 +108,7 @@ channels:
     messages:
       publish.message:
         payload:
-          type: string
+          type: 'null'
 
   '/topic/{matchUrl}/endGame':
     address: '/topic/{matchUrl}/endGame'
@@ -135,6 +118,7 @@ channels:
     messages:
       publish.message:
         payload:
+          description: username of the winner
           type: string
 
   /topic/matchUrl:
@@ -142,6 +126,7 @@ channels:
     messages:
       subscribe.message:
         payload:
+          description: matchUrl of the created game
           type: string
 
   '/topic/chat/{matchUrl}':
@@ -162,7 +147,8 @@ channels:
     messages:
       subscribe.message:
         payload:
-          type: string
+          description: true if the game has started
+          type: boolean
 
   '/topic/{matchUrl}/leader':
     address: '/topic/{matchUrl}/leader'
@@ -182,10 +168,7 @@ channels:
     messages:
       subscribe.message:
         payload:
-          type: object
-          properties:
-            user_shifts:
-              type: object
+          $ref: '#/components/schemas/Shifts'
 
   '/topic/user/{username}/{matchUrl}/answers':
     address: '/topic/user/{username}/{matchUrl}/answers'
@@ -195,6 +178,7 @@ channels:
     messages:
       subscribe.message:
         payload:
+          description: List<AnswerCardDTO\>
           type: array
           items:
             $ref: '#/components/schemas/AnswerCardDTO'
@@ -209,6 +193,7 @@ channels:
     messages:
       subscribe.message:
         payload:
+          description: List<QuestionCardDTO\>
           type: array
           items:
             $ref: '#/components/schemas/QuestionCardDTO'
@@ -223,7 +208,7 @@ channels:
     messages:
       subscribe.message:
         payload:
-          type: object
+          $ref: '#/components/schemas/ChosenAnswers'
 
   '/topic/{matchUrl}/table/question':
     address: '/topic/{matchUrl}/table/question'
@@ -243,6 +228,7 @@ channels:
     messages:
       subscribe.message:
         payload:
+          description: The username of the winner
           type: string
 
   '/topic/{matchUrl}/table/chosenAnswers':
@@ -253,7 +239,7 @@ channels:
     messages:
       subscribe.message:
         payload:
-          type: object
+          $ref: '#/components/schemas/ChosenAnswers'
 
   '/topic/{matchUrl}/scores':
     address: '/topic/{matchUrl}/scores'
@@ -263,7 +249,7 @@ channels:
     messages:
       subscribe.message:
         payload:
-          type: object
+          $ref: '#/components/schemas/Scores'
 
   '/topic/players/{matchUrl}':
     address: '/topic/players/{matchUrl}'
@@ -273,7 +259,10 @@ channels:
     messages:
       subscribe.message:
         payload:
-          type: object
+          description: List<UserDTO\> for a game
+          type: array
+          items:
+              $ref: '#/components/schemas/UserDTO'
 
   '/topic/user/{username}/errors':
     address: '/topic/user/{username}/errors'
@@ -293,6 +282,7 @@ channels:
     messages:
       subscribe.message:
         payload:
+          description: A string about why the game closed prematurely
           type: string
 
   '/topic/{matchUrl}/timer':
@@ -303,6 +293,7 @@ channels:
     messages:
       subscribe.message:
         payload:
+          description: A string about the status of the timer (eg. 'expired', 'started', ...)
           type: string
 
 operations:
@@ -507,6 +498,12 @@ components:
           type: string
         lastName:
           type: string
+  
+    UserRole:
+      type: string
+      enum:
+        - ANONYMOUS
+        - REGISTERED
 
     MessageDTO:
       type: object
@@ -520,6 +517,7 @@ components:
           type: string
 
     CardDTO:
+      description: Representation of a generic Card or an AnswerCardDTO
       type: object
       properties:
         cardId:
@@ -530,6 +528,7 @@ components:
           $ref: '#/components/schemas/CardType'
 
     QuestionCardDTO:
+      description: "Representation of a QuestionCardDTO"
       allOf:
         - $ref: '#/components/schemas/CardDTO'
         - type: object
@@ -546,8 +545,31 @@ components:
         - ANSWER
         - QUESTION
 
-    UserRole:
-      type: string
-      enum:
-        - ANONYMOUS
-        - REGISTERED
+    Scores:
+      description: Representation for a Map<String, Integer>
+      type: object
+      properties:
+        username:
+          type: string
+        score:
+          type: integer
+
+    ChosenAnswers:
+      description: Representation of Map<String, List<AnswerCardDTO\>>
+      type: object
+      properties:
+        username:
+          type: string
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnswerCardDTO'
+
+    Shifts:
+      description: Representation for a Map<String, Integer>
+      type: object
+      properties:
+        username:
+            type: string
+        shift_number:
+            type: integer
