@@ -164,6 +164,16 @@ channels:
         payload:
           type: string
 
+  '/topic/{matchUrl}/leader':
+    address: '/topic/{matchUrl}/leader'
+    parameters:
+      matchUrl:
+        description: The Match Url of the game
+    messages:
+      subscribe.message:
+        payload:
+          $ref: '#/components/schemas/UserDTO'
+
   '/topic/{matchUrl}/shifts':
     address: '/topic/{matchUrl}/shifts'
     parameters:
@@ -381,6 +391,13 @@ operations:
     messages:
       - $ref: '#/channels/~1topic~1started~1{matchUrl}/messages/subscribe.message'
 
+  '/topic/{matchUrl}/leader.subscribe':
+    action: send
+    channel:
+      $ref: '#/channels/~1topic~1{matchUrl}~1leader'
+    messages:
+      - $ref: '#/channels/~1topic~1{matchUrl}~1leader/messages/subscribe.message'
+
   '/topic/{matchUrl}/shifts.subscribe':
     action: send
     channel:
@@ -473,6 +490,23 @@ operations:
 
 components:
   schemas:
+    UserDTO:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        username:
+          type: string
+        role:
+          type: string
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+
     MessageDTO:
       type: object
       properties:
