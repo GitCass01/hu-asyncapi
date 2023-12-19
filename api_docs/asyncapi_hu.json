@@ -85,8 +85,7 @@
       "messages": {
         "publish.message": {
           "payload": {
-            "description": "username",
-            "type": "string"
+            "type": "null"
           }
         }
       }
