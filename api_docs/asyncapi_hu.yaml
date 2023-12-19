@@ -203,7 +203,10 @@ channels:
     messages:
       subscribe.message:
         payload:
-          $ref: '#/components/schemas/ChosenAnswers'
+          description: Representation for a Map<String, List<AnswerCardDTO\>>
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ChosenAnswerMapItem'
 
   '/topic/{matchUrl}/table/question':
     address: '/topic/{matchUrl}/table/question'
@@ -234,7 +237,10 @@ channels:
     messages:
       subscribe.message:
         payload:
-          $ref: '#/components/schemas/ChosenAnswers'
+          description: Representation for a Map<String, List<AnswerCardDTO\>>
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ChosenAnswerMapItem'
 
   '/topic/{matchUrl}/scores':
     address: '/topic/{matchUrl}/scores'
@@ -248,7 +254,6 @@ channels:
           type: object
           additionalProperties:
             $ref: '#/components/schemas/ScoreMapItem'
-
 
   '/topic/players/{matchUrl}':
     address: '/topic/players/{matchUrl}'
@@ -579,8 +584,8 @@ components:
         score:
           type: integer
 
-    ChosenAnswers:
-      description: Representation of Map<String, List<AnswerCardDTO\>>
+    ChosenAnswerMapItem:
+      description: Representation of an item for a  Map<String, List<AnswerCardDTO\>>
       type: object
       properties:
         username:

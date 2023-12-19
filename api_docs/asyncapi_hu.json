@@ -289,7 +289,11 @@
       "messages": {
         "subscribe.message": {
           "payload": {
-            "$ref": "#/components/schemas/ChosenAnswers"
+            "description": "Representation for a Map<String, List<AnswerCardDTO\\>>",
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ChosenAnswerMapItem"
+            }
           }
         }
       }
@@ -335,7 +339,11 @@
       "messages": {
         "subscribe.message": {
           "payload": {
-            "$ref": "#/components/schemas/ChosenAnswers"
+            "description": "Representation for a Map<String, List<AnswerCardDTO\\>>",
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ChosenAnswerMapItem"
+            }
           }
         }
       }
@@ -838,8 +846,8 @@
           }
         }
       },
-      "ChosenAnswers": {
-        "description": "Representation of Map<String, List<AnswerCardDTO\\>>",
+      "ChosenAnswerMapItem": {
+        "description": "Representation of an item for a  Map<String, List<AnswerCardDTO\\>>",
         "type": "object",
         "properties": {
           "username": {
