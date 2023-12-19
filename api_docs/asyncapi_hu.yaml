@@ -499,9 +499,10 @@ components:
         username:
           type: string
         role:
-          type: string
+          $ref: '#/components/schemas/UserRole'
         email:
           type: string
+          format: email
         firstName:
           type: string
         lastName:
@@ -544,3 +545,9 @@ components:
       enum:
         - ANSWER
         - QUESTION
+
+    UserRole:
+      type: string
+      enum:
+        - ANONYMOUS
+        - REGISTERED
