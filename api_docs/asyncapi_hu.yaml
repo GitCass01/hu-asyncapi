@@ -265,8 +265,8 @@ channels:
         payload:
           type: string
 
-  '/topic/closed/{matchUrl}':
-    address: '/topic/closed/{matchUrl}'
+  '/topic/{matchUrl}/closed':
+    address: '/topic/{matchUrl}/closed'
     parameters:
       matchUrl:
         description: The Match Url of the game closing prematurely (eg. too few players)
@@ -440,12 +440,12 @@ operations:
     messages:
       - $ref: '#/channels/~1topic~1user~1{username}~1errors/messages/subscribe.message'
 
-  '/topic/closed/{matchUrl}.subscribe':
+  '/topic/{matchUrl}/closed.subscribe':
     action: send
     channel:
-      $ref: '#/channels/~1topic~1closed~1{matchUrl}'
+      $ref: '#/channels/~1topic~1{matchUrl}~1closed'
     messages:
-      - $ref: '#/channels/~1topic~1closed~1{matchUrl}/messages/subscribe.message'
+      - $ref: '#/channels/~1topic~1{matchUrl}~1closed/messages/subscribe.message'
 
   '/topic/{matchUrl}/timer.subscribe':
     action: send
